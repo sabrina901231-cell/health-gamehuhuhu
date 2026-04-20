@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>高老師四季好食光</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(135deg, #fff3f7, #f3fff4);
+      color: #4a3b3b;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      background: #fffdf8;
+      border-radius: 28px;
+      box-shadow: 0 16px 40px rgba(214, 128, 150, 0.25);
+      padding: 26px;
+      text-align: center;
+      border: 3px solid #ffd4df;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app::before {
+      content: "";
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      background: #ffe3ec;
+      border-radius: 50%;
+      top: -70px;
+      right: -70px;
+      z-index: 0;
+    }
+
+    .app::after {
+      content: "";
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      background: #ddf6df;
+      border-radius: 50%;
+      bottom: -60px;
+      left: -60px;
+      z-index: 0;
+    }
+
+    .screen {
+      position: relative;
+      z-index: 1;
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    h1 {
+      margin: 10px 0 8px;
+      font-size: 34px;
+      color: #e95b86;
+      line-height: 1.25;
+    }
+
+    h2 {
+      margin: 8px 0 14px;
+      font-size: 24px;
+      color: #e95b86;
+    }
+
+    p {
+      font-size: 17px;
+      line-height: 1.7;
+      margin: 10px 0;
+    }
+
+    .logo {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: #ffe1ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 54px;
+      box-shadow: inset 0 0 0 6px #fff7fa;
+    }
+
+    .tagline {
+      background: #fef1b9;
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: bold;
+      color: #7a5d00;
+      margin-bottom: 16px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      padding: 15px 18px;
+      margin-top: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.03);
+    }
+
+    .primary-btn {
+      background: #e95b86;
+      color: white;
+      box-shadow: 0 8px 16px rgba(233, 91, 134, 0.25);
+    }
+
+    .secondary-btn {
+      background: #ffe7ef;
+      color: #b93d66;
+    }
+
+    .option-btn {
+      background: white;
+      color: #4a3b3b;
+      border: 2px solid #ffd4df;
+      text-align: left;
+    }
+
+    .option-btn.correct {
+      background: #ddf7df;
+      border-color: #6ac46f;
+      color: #267a2b;
+    }
+
+    .option-btn.wrong {
+      background: #ffe2e2;
+      border-color: #ef7b7b;
+      color: #a33131;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      font-weight: bold;
+      color: #775454;
+    }
+
+    .season-badge {
+      background: #ffe7ef;
+      color: #b93d66;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 15px;
+    }
+
+    .score-badge {
+      background: #ddf6df;
+      color: #34783a;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 15px;
+    }
+
+    .question-card {
+      background: #fff7fa;
+      border: 2px dashed #ffc5d6;
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .question-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    .feedback {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 20px;
+      background: #fff5c7;
+      color: #735900;
+      font-size: 16px;
+      line-height: 1.7;
+      display: none;
+      text-align: left;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .result-score {
+      font-size: 52px;
+      font-weight: bold;
+      color: #e95b86;
+      margin: 10px 0;
+    }
+
+    .title-card {
+      background: #fff7fa;
+      border-radius: 22px;
+      padding: 18px;
+      margin: 16px 0;
+      border: 2px solid #ffd4df;
+    }
+
+    .small-note {
+      font-size: 14px;
+      color: #8b7777;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <!-- 首頁 -->
+    <section id="startScreen" class="screen active">
+      <div class="logo">🍱</div>
+      <h1>高老師<br />四季好食光</h1>
+      <div class="tagline">銀養呷趣味</div>
+      <p>
+        跟著高老師一起完成四季營養任務，
+        幫長輩選出更健康、均衡又好入口的食物吧！
+      </p>
+      <button class="primary-btn" onclick="startGame()">開始挑戰</button>
+      <p class="small-note">共 6 題，每題 10 分。</p>
+    </section>
+
+    <!-- 遊戲頁 -->
+    <section id="gameScreen" class="screen">
+      <div class="status-bar">
+        <span id="seasonBadge" class="season-badge">春天任務</span>
+        <span id="scoreBadge" class="score-badge">分數：0</span>
+      </div>
+
+      <div class="question-card">
+        <div id="questionIcon" class="question-icon">🌱</div>
+        <h2 id="questionTitle">題目</h2>
+        <p id="questionText">題目內容</p>
+      </div>
+
+      <div id="optionsBox"></div>
+
+      <div id="feedbackBox" class="feedback"></div>
+
+      <button id="nextBtn" class="primary-btn" style="display: none;" onclick="nextQuestion()">
+        下一題
+      </button>
+    </section>
+
+    <!-- 結果頁 -->
+    <section id="resultScreen" class="screen">
+      <div class="logo">🏆</div>
+      <h1>挑戰完成！</h1>
+      <p>你的總分是</p>
+      <div id="finalScore" class="result-score">0</div>
+      <div class="title-card">
+        <h2 id="finalTitle">銀養小達人</h2>
+        <p id="finalAdvice">你已經學會不少高齡營養小技巧囉！</p>
+      </div>
+      <button class="primary-btn" onclick="restartGame()">再玩一次</button>
+      <button class="secondary-btn" onclick="showStart()">回到首頁</button>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        season: "春天任務",
+        icon: "🌱",
+        title: "春天早餐怎麼補蛋白質？",
+        text: "長輩最近早餐吃得比較少，請問哪一種食物比較適合加入早餐，幫助補充蛋白質？",
+        options: ["毛豆", "糖果", "薯條", "汽水"],
+        answer: 0,
+        feedback: "答對了！毛豆含有植物性蛋白質，也可以加入飯糰、沙拉或小點心中，適合幫助長輩補充營養。"
+      },
+      {
+        season: "夏天任務",
+        icon: "🥒",
+        title: "夏天清爽補水",
+        text: "天氣很熱，長輩胃口不好，請問哪一種食物比較清爽，也能補充水分？",
+        options: ["小黃瓜", "炸雞", "奶油蛋糕", "洋芋片"],
+        answer: 0,
+        feedback: "答對了！小黃瓜水分多、口感清爽，可以做成涼拌小菜，幫助夏天增加食慾。"
+      },
+      {
+        season: "秋天任務",
+        icon: "🍠",
+        title: "秋天膳食纖維補給",
+        text: "長輩最近排便不太順，想增加膳食纖維，哪一種點心比較適合？",
+        options: ["地瓜", "珍珠奶茶", "餅乾", "炸薯條"],
+        answer: 0,
+        feedback: "答對了！地瓜含有膳食纖維，也能提供能量。可以蒸熟後切小塊，當作溫和的點心。"
+      },
+      {
+        season: "冬天任務",
+        icon: "🖤",
+        title: "冬天暖心點心",
+        text: "冬天想幫長輩準備溫暖點心，下列哪一項比較適合做成少糖版本？",
+        options: ["黑芝麻糊", "含糖汽水", "巧克力蛋糕", "炸甜甜圈"],
+        answer: 0,
+        feedback: "答對了！黑芝麻糊可以做成少糖版本，口感溫暖，也適合作為冬天點心。"
+      },
+      {
+        season: "均衡任務",
+        icon: "🍽️",
+        title: "早餐 1+1 怎麼搭？",
+        text: "如果早餐只有白吐司，想讓它更均衡，可以加上哪一項？",
+        options: ["水煮蛋", "糖果", "奶茶", "洋芋片"],
+        answer: 0,
+        feedback: "答對了！白吐司主要是澱粉，加上水煮蛋可以補充蛋白質，讓早餐更有飽足感。"
+      },
+      {
+        season: "減糖任務",
+        icon: "🧋",
+        title: "飲料怎麼選比較好？",
+        text: "長輩想喝飲料，下列哪一個選擇比較適合日常飲用？",
+        options: ["無糖茶", "全糖珍奶", "含糖汽水", "奶精奶茶"],
+        answer: 0,
+        feedback: "答對了！日常飲品建議以白開水或無糖茶為主，可以減少額外糖分攝取。"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    function showScreen(screenId) {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+      document.getElementById(screenId).classList.add("active");
+    }
+
+    function startGame() {
+      currentQuestionIndex = 0;
+      score = 0;
+      answered = false;
+      showScreen("gameScreen");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      answered = false;
+
+      document.getElementById("seasonBadge").textContent = question.season;
+      document.getElementById("scoreBadge").textContent = `分數：${score}`;
+      document.getElementById("questionIcon").textContent = question.icon;
+      document.getElementById("questionTitle").textContent = question.title;
+      document.getElementById("questionText").textContent = question.text;
+
+      const optionsBox = document.getElementById("optionsBox");
+      optionsBox.innerHTML = "";
+
+      question.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+        button.onclick = () => checkAnswer(index, button);
+        optionsBox.appendChild(button);
+      });
+
+      const feedbackBox = document.getElementById("feedbackBox");
+      feedbackBox.classList.remove("show");
+      feedbackBox.textContent = "";
+
+      document.getElementById("nextBtn").style.display = "none";
+    }
+
+    function checkAnswer(selectedIndex, selectedButton) {
+      if (answered) return;
+      answered = true;
+
+      const question = questions[currentQuestionIndex];
+      const optionButtons = document.querySelectorAll(".option-btn");
+
+      optionButtons.forEach((button, index) => {
+        button.disabled = true;
+        if (index === question.answer) {
+          button.classList.add("correct");
+        }
+      });
+
+      const feedbackBox = document.getElementById("feedbackBox");
+
+      if (selectedIndex === question.answer) {
+        score += 10;
+        feedbackBox.innerHTML = `✅ <strong>答對了！</strong><br>${question.feedback}`;
+      } else {
+        selectedButton.classList.add("wrong");
+        feedbackBox.innerHTML = `💡 <strong>差一點！</strong><br>正確答案是「${question.options[question.answer]}」。<br>${question.feedback}`;
+      }
+
+      document.getElementById("scoreBadge").textContent = `分數：${score}`;
+      feedbackBox.classList.add("show");
+
+      const nextBtn = document.getElementById("nextBtn");
+      nextBtn.style.display = "block";
+      nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? "看結果" : "下一題";
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      showScreen("resultScreen");
+      document.getElementById("finalScore").textContent = `${score} 分`;
+
+      const finalTitle = document.getElementById("finalTitle");
+      const finalAdvice = document.getElementById("finalAdvice");
+
+      if (score >= 50) {
+        finalTitle.textContent = "銀養小達人 🌟";
+        finalAdvice.textContent = "太棒了！你已經很會幫長輩挑選均衡又適合的食物，可以把這些概念帶到社區活動中。";
+      } else if (score >= 30) {
+        finalTitle.textContent = "健康練習生 🌱";
+        finalAdvice.textContent = "你已經有基本概念囉！可以再多注意蛋白質、膳食纖維和減糖選擇。";
+      } else {
+        finalTitle.textContent = "營養探索者 🔍";
+        finalAdvice.textContent = "沒關係！再玩一次，你會更熟悉長輩飲食選擇的小技巧。";
+      }
+    }
+
+    function restartGame() {
+      startGame();
+    }
+
+    function showStart() {
+      showScreen("startScreen");
+    }
+  </script>
+</body>
+</html>
